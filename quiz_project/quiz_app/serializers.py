@@ -25,7 +25,17 @@ class CategorySerializer(serializers.ModelSerializer):
 class QuestionSerializer(serializers.ModelSerializer):
     class Meta:
         model = Question
-        fields = '__all__'
+        fields = "__all__"
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        request = self.context.get("request")
+        
+        # Hide correct_option if user is not staff/admin
+        if not request.user.is_staff:
+            data.pop("correct_option", None)
+        return data
+
 
 
 class QuizSerializer(serializers.ModelSerializer):
